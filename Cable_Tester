@@ -1,0 +1,81 @@
+
+    int latchPin = 5;
+    int clockPin = 6;
+    int dataPin = 4;
+    int outEnable = 7;
+
+    int pinCount = 3;
+
+    int outPins[10] = {
+      20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+    };
+
+    int inPins[10] = {
+      30, 31, 32, 33, 34, 35, 36, 37, 38, 39
+    };
+
+    byte registers[4] = {
+    0b00000000,    
+    0b00000000,
+    0b00000000,
+    0b00000000
+    };
+
+    void setup() 
+    {
+      Serial.begin(9600);
+
+      for (int i = 0; i < 10; i++) {
+        pinMode(outPins[i], OUTPUT);
+        pinMode(inPins[i], INPUT);        
+      }
+      
+      pinMode(latchPin, OUTPUT);
+      pinMode(dataPin, OUTPUT);  
+      pinMode(clockPin, OUTPUT);
+      pinMode(outEnable, OUTPUT);
+
+      for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 8; j++) {
+          bitSet(registers[i], j);
+          updateRegisters();
+          delay(500);
+          bitClear(registers[i], j);
+          updateRegisters();
+          delay(200);
+        }
+      }
+    }
+    
+    void loop() {
+    }
+   
+    void updateRegisters() {
+      digitalWrite(outEnable, HIGH);
+
+      for (int i = 3; i >= 0; i--) {
+        digitalWrite(latchPin, LOW);
+        shiftOut(dataPin, clockPin, MSBFIRST, registers[i]);
+        digitalWrite(latchPin, HIGH);
+      }
+      
+      digitalWrite(outEnable, LOW);
+    }
+
+    void pinTest(pinCount) {
+      for (int i = 1; i <= pinCount; i++) { // iteratre through output pins
+        digitalWrite(outPins[i], HIGH); // set i high to test that pin
+        for (int j = 1; i <= pinCount; j++) { // iterate through input pins
+          if (digitalRead(j) == HIGH && i == j) {
+            //Some way of making LED[i] green
+          }
+          else if (digitalRead(j) == HIGH && i != j) {
+            //Some way to set LED[i] blue
+          }
+          else if (digitalRead(j) == LOW) {
+            //Some way to set LED[i] red
+          }
+        }
+        digitalWrite(outPins[i], LOW); // set i low again
+      }
+    }
