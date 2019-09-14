@@ -15,11 +15,11 @@
       pinMode(outEnable, OUTPUT);
     
       ledCheck();
-      leds[0].gOn();
-      updateRegisters();
+
+      pinTest(3);
+      
+      checkRegisters();
     }
     
     void loop() {
     }
-   
-

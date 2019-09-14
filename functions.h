@@ -7,16 +7,13 @@
     extern const int latchPin;
     extern const int clockPin;
     extern const int dataPin;
-    extern const int outEnable;
-  
-    extern const int pinCount;
+    extern const int outEnable;    
 
     extern const int outPins[10];
 
     extern const int inPins[10];
 
-    extern byte registers[4];
-
+    extern byte registers[8];
 /*===================================================================================================================*/
 
     class LED {
@@ -39,14 +36,16 @@
       void bOff();
     };
 
-    extern LED leds[10];
+    extern LED leds[20];
 
 /*===================================================================================================================*/
  
     void updateRegisters();
-
+    
     void ledCheck();
 
     void pinTest(int pinCount);
+
+    void checkRegisters();
 
     #endif
