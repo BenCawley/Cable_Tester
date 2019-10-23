@@ -48,4 +48,6 @@
 
     void checkRegisters();
 
+    void clearRegisters();
+
     #endif

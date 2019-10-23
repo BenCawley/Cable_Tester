@@ -53,7 +53,6 @@
       
     void updateRegisters() {
       digitalWrite(outEnable, HIGH);
-
       for (int i = 7; i >= 0; i--) {
         digitalWrite(latchPin, LOW);
         shiftOut(dataPin, clockPin, MSBFIRST, registers[i]);
@@ -83,37 +82,49 @@
         leds[k-15].rOff();
         leds[k-25].bOff();
         updateRegisters();
-        delay(50);
+        delay(20);
       }
     }
 
     void pinTest(int pinCount) {
       for (int i = 0; i < pinCount; i++) { // iterate through output pins
-        digitalWrite(outPins[i], HIGH); // set i high to test that pin
+        digitalWrite(outPins[i], LOW); // set i high to test that pin
         leds[i + 10].gOn();
         Serial.print("Output pin ");
         Serial.print(i);
+        Serial.print("\n");
         for (int j = 0; j < pinCount; j++) { // iterate through input pins
           Serial.print("Input pin ");
           Serial.print(j);
           Serial.print(" status:\n");
           Serial.print(digitalRead(inPins[j]));
-          if (digitalRead(inPins[j]) == HIGH && i == j) {
+          Serial.print("\n");
+          Serial.print(i==j);
+          Serial.print("\n");
+          Serial.print(inPins[j] == LOW && i == j);
+          Serial.print("\n");
+        
+          if (digitalRead(inPins[j]) == LOW && i == j) {
             leds[i].gOn();
           }
-          else if (digitalRead(inPins[j]) == HIGH && i != j) {
+          else if (digitalRead(inPins[j]) == LOW && i != j) {
             leds[i].bOn();
           }
-          else if (digitalRead(inPins[j]) == LOW) {
+          else if (digitalRead(inPins[j]) == HIGH && i == j) {
             leds[i].rOn();
+          }
+          else if (digitalRead(inPins[j]) == HIGH && i != j) {
+            continue;
           }
           else {
             Serial.print("Logic has failed to reach an outcome, time to debug!\n");
             break;
           }
         }
-        digitalWrite(outPins[i], LOW); // set i low again
-        leds[i + 10].gOff();
+        digitalWrite(outPins[i], HIGH); // set i low again
+       // leds[i + 10].gOff();
+        delay(1000);
+        updateRegisters();
       }
       updateRegisters();
     }
@@ -123,6 +134,14 @@
       for (int i = 0; i < 8; i++) {
         Serial.print(registers[i], BIN);
         Serial.print("\n");          
+      }
+    }
+
+    void clearRegisters() {
+      for (int i = 7; i >= 0; i--) {
+        for (int j = 7; j >= 0; j--) {
+          bitClear(registers[i], j);
+        }
       }
     }
 
