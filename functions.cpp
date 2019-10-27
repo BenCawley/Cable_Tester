@@ -15,7 +15,7 @@
        30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
 
-    byte registers[8] = {
+    byte registers[8] = { //Used for LED output
     0b00000000, 
     0b00000000, 
     0b00000000, 
@@ -25,6 +25,19 @@
     0b00000000,
     0b00000000
     };
+
+    bool pinRegisters[10][10] = {
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0}
+}
     
     LED leds[20] = {
       LED(0, 1, 2, 0, 0, 0),
@@ -62,7 +75,7 @@
     }
 
     void ledCheck() {
-      for (int i = 0; i < 8; i++) { // cycles through each led in turn to check I haven't broken anything
+      for (int i = 0; i < 8; i++) { // Cycles through each led in turn to check I haven't broken anything
         for (int j = 0; j < 8; j++) {
           bitSet(registers[i], j);
           updateRegisters();
@@ -88,33 +101,16 @@
 
     void pinTest(int pinCount) {
       for (int i = 0; i < pinCount; i++) { // iterate through output pins
+
         digitalWrite(outPins[i], LOW); // set i high to test that pin
         leds[i + 10].gOn();
-        Serial.print("Output pin ");
-        Serial.print(i);
-        Serial.print("\n");
         for (int j = 0; j < pinCount; j++) { // iterate through input pins
-          Serial.print("Input pin ");
-          Serial.print(j);
-          Serial.print(" status:\n");
-          Serial.print(digitalRead(inPins[j]));
-          Serial.print("\n");
-          Serial.print(i==j);
-          Serial.print("\n");
-          Serial.print(inPins[j] == LOW && i == j);
-          Serial.print("\n");
         
-          if (digitalRead(inPins[j]) == LOW && i == j) {
-            leds[i].gOn();
+          if (digitalRead(inPins[j]) == LOW) {
+            pinRegisters[i][j] = true;
           }
-          else if (digitalRead(inPins[j]) == LOW && i != j) {
-            leds[i].bOn();
-          }
-          else if (digitalRead(inPins[j]) == HIGH && i == j) {
-            leds[i].rOn();
-          }
-          else if (digitalRead(inPins[j]) == HIGH && i != j) {
-            continue;
+          else if (digitalRead(inPins[j]) == HIGH) {
+            pinRegisters[i][j] = false;
           }
           else {
             Serial.print("Logic has failed to reach an outcome, time to debug!\n");
@@ -122,10 +118,10 @@
           }
         }
         digitalWrite(outPins[i], HIGH); // set i low again
-       // leds[i + 10].gOff();
-        delay(1000);
         updateRegisters();
       }
+      // Write a for loop here that iterates through pinRegisters and compares each one to the others 
+      //in order to work out where the breaks, shorts and crosses are.
       updateRegisters();
     }
 

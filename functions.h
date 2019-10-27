@@ -14,6 +14,8 @@
     extern const int inPins[10];
 
     extern byte registers[8];
+
+    extern bool pinRegisters[10][10];
 /*===================================================================================================================*/
 
     class LED {
