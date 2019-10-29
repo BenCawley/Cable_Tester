@@ -15,7 +15,7 @@
        30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
 
-    byte registers[8] = { //Used for LED output
+    byte ledRegisters[8] = { //Used for LED output
     0b00000000, 
     0b00000000, 
     0b00000000, 
@@ -24,6 +24,19 @@
     0b00000000,
     0b00000000,
     0b00000000
+    };
+
+    bool pinMask[10][10] = {
+    {1,0,0,0,0,0,0,0,0,0}
+    {0,1,0,0,0,0,0,0,0,0}
+    {0,0,1,0,0,0,0,0,0,0}
+    {0,0,0,1,0,0,0,0,0,0}
+    {0,0,0,0,1,0,0,0,0,0}
+    {0,0,0,0,0,1,0,0,0,0}
+    {0,0,0,0,0,0,1,0,0,0}
+    {0,0,0,0,0,0,0,1,0,0}
+    {0,0,0,0,0,0,0,0,1,0}
+    {0,0,0,0,0,0,0,0,0,1}  
     };
 
     bool pinRegisters[10][10] = {
@@ -37,7 +50,7 @@
     {0,0,0,0,0,0,0,0,0,0}
     {0,0,0,0,0,0,0,0,0,0}
     {0,0,0,0,0,0,0,0,0,0}
-}
+    };
     
     LED leds[20] = {
       LED(0, 1, 2, 0, 0, 0),
@@ -68,7 +81,7 @@
       digitalWrite(outEnable, HIGH);
       for (int i = 7; i >= 0; i--) {
         digitalWrite(latchPin, LOW);
-        shiftOut(dataPin, clockPin, MSBFIRST, registers[i]);
+        shiftOut(dataPin, clockPin, MSBFIRST, ledRegisters[i]);
         digitalWrite(latchPin, HIGH);
       }
       digitalWrite(outEnable, LOW);
@@ -77,10 +90,10 @@
     void ledCheck() {
       for (int i = 0; i < 8; i++) { // Cycles through each led in turn to check I haven't broken anything
         for (int j = 0; j < 8; j++) {
-          bitSet(registers[i], j);
+          bitSet(ledRegisters)[i], j);
           updateRegisters();
           delay(20);
-          bitClear(registers[i], j);
+          bitClear(ledRegisters)[i], j);
           updateRegisters();
           delay(20);
         }
@@ -101,11 +114,8 @@
 
     void pinTest(int pinCount) {
       for (int i = 0; i < pinCount; i++) { // iterate through output pins
-
         digitalWrite(outPins[i], LOW); // set i high to test that pin
-        leds[i + 10].gOn();
-        for (int j = 0; j < pinCount; j++) { // iterate through input pins
-        
+        for (int j = 0; j < pinCount; j++) { // iterate through input pins and test for high or low state
           if (digitalRead(inPins[j]) == LOW) {
             pinRegisters[i][j] = true;
           }
@@ -113,30 +123,65 @@
             pinRegisters[i][j] = false;
           }
           else {
-            Serial.print("Logic has failed to reach an outcome, time to debug!\n");
+            Serial.print("pinTest conditions not met, time to debug!!\n");
             break;
           }
         }
         digitalWrite(outPins[i], HIGH); // set i low again
         updateRegisters();
       }
-      // Write a for loop here that iterates through pinRegisters and compares each one to the others 
-      //in order to work out where the breaks, shorts and crosses are.
+      // Next we iterate through pinRegisters and pinMask, comparing each part of the array to find the breaks, crosses and shorts
+      for (int k = 0; k < pinCount; k++) {
+        if (pinRegisters[k] == pinMask[k]) {
+          leds[k].gOn();
+        }
+        for (int m = 0; m < pinCount; m++) {//if pinMask true pin is 0/false, turn on led red and if pinMask false pin is true/1, turn led blue
+          if (pinMask[k][m] == true && pinRegisters[k][m] == false) {
+            leds[k].rOn();
+            leds[m+10].rOn();
+        }
+        else if (pinMask[k][m] == false && pinRegisters[k][m] == true) {
+          leds[k].bOn();
+          leds[m+10].bOn();
+        }
+        else if (pinMask[k][m] == true && pinRegisters[k][m] == true) {
+          leds[k].gOn();
+          leds[m+10].gOn();
+        }
+        else if (pinMask[k][m] == false && pinRegisters[k][m] == false) {
+          continue;
+        }
+        else {
+          Serial.print("pinRegister comparison conditions not met, time to debug!!\n");
+        }
+        updateRegisters();
+      }
       updateRegisters();
     }
 
     void checkRegisters() {
-      Serial.print("Registers: \n");
+      Serial.print("LED Registers: \n");
       for (int i = 0; i < 8; i++) {
-        Serial.print(registers[i], BIN);
+        Serial.print(ledRegisters[i], BIN);
         Serial.print("\n");          
       }
+      Serial.print("\nPin Registers:\n");
+      for (int k = 0; k < 10; k++) {
+        Serial.print("\n");
+        for (int m = 0; m < 10; m++) {
+          Serial.print(pinRegisters[k][m]);
+          if (m < 9) {
+            Serial.print(",\t");
+          }
+        }
+      }
+      Serial.print("\n");
     }
 
     void clearRegisters() {
       for (int i = 7; i >= 0; i--) {
         for (int j = 7; j >= 0; j--) {
-          bitClear(registers[i], j);
+          bitClear(ledRegisters)[i], j);
         }
       }
     }
@@ -153,20 +198,20 @@
       }
 
       void LED::rOn() {
-        bitSet(registers[rReg], rBit);
+        bitSet(ledRegisters)[rReg], rBit);
       }
       void LED::rOff() {
-        bitClear(registers[rReg], rBit);
+        bitClear(ledRegisters)[rReg], rBit);
       }
       void LED::gOn() {
-        bitSet(registers[gReg], gBit);
+        bitSet(ledRegisters)[gReg], gBit);
       }
       void LED::gOff() {
-        bitClear(registers[gReg], gBit);
+        bitClear(ledRegisters)[gReg], gBit);
       }
       void LED::bOn() {
-        bitSet(registers[bReg], bBit);
+        bitSet(ledRegisters)[bReg], bBit);
       }
       void LED::bOff() {
-        bitClear(registers[bReg], bBit);
+        bitClear(ledRegisters)[bReg], bBit);
       }

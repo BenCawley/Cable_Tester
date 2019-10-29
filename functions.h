@@ -13,7 +13,9 @@
 
     extern const int inPins[10];
 
-    extern byte registers[8];
+    extern byte ledRegisters[8];
+
+    extern const bool pinMask[10][10];
 
     extern bool pinRegisters[10][10];
 /*===================================================================================================================*/
