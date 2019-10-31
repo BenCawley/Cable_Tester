@@ -27,28 +27,28 @@
     };
 
     bool pinMask[10][10] = {
-    {1,0,0,0,0,0,0,0,0,0}
-    {0,1,0,0,0,0,0,0,0,0}
-    {0,0,1,0,0,0,0,0,0,0}
-    {0,0,0,1,0,0,0,0,0,0}
-    {0,0,0,0,1,0,0,0,0,0}
-    {0,0,0,0,0,1,0,0,0,0}
-    {0,0,0,0,0,0,1,0,0,0}
-    {0,0,0,0,0,0,0,1,0,0}
-    {0,0,0,0,0,0,0,0,1,0}
+    {1,0,0,0,0,0,0,0,0,0},
+    {0,1,0,0,0,0,0,0,0,0},
+    {0,0,1,0,0,0,0,0,0,0},
+    {0,0,0,1,0,0,0,0,0,0},
+    {0,0,0,0,1,0,0,0,0,0},
+    {0,0,0,0,0,1,0,0,0,0},
+    {0,0,0,0,0,0,1,0,0,0},
+    {0,0,0,0,0,0,0,1,0,0},
+    {0,0,0,0,0,0,0,0,1,0},
     {0,0,0,0,0,0,0,0,0,1}  
     };
 
     bool pinRegisters[10][10] = {
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
-    {0,0,0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0}
     };
     
@@ -90,10 +90,10 @@
     void ledCheck() {
       for (int i = 0; i < 8; i++) { // Cycles through each led in turn to check I haven't broken anything
         for (int j = 0; j < 8; j++) {
-          bitSet(ledRegisters)[i], j);
+          bitSet(ledRegisters[i], j);
           updateRegisters();
           delay(20);
-          bitClear(ledRegisters)[i], j);
+          bitClear(ledRegisters[i], j);
           updateRegisters();
           delay(20);
         }
@@ -139,24 +139,25 @@
           if (pinMask[k][m] == true && pinRegisters[k][m] == false) {
             leds[k].rOn();
             leds[m+10].rOn();
+          }
+          else if (pinMask[k][m] == false && pinRegisters[k][m] == true) {
+            leds[k].bOn();
+            leds[m+10].bOn();
+          }
+          else if (pinMask[k][m] == true && pinRegisters[k][m] == true) {
+            leds[k].gOn();
+            leds[m+10].gOn();
+          }
+          else if (pinMask[k][m] == false && pinRegisters[k][m] == false) {
+            continue;
+          }
+          else {
+            Serial.print("pinRegister comparison conditions not met, time to debug!!\n");
+          }
+          updateRegisters();
         }
-        else if (pinMask[k][m] == false && pinRegisters[k][m] == true) {
-          leds[k].bOn();
-          leds[m+10].bOn();
-        }
-        else if (pinMask[k][m] == true && pinRegisters[k][m] == true) {
-          leds[k].gOn();
-          leds[m+10].gOn();
-        }
-        else if (pinMask[k][m] == false && pinRegisters[k][m] == false) {
-          continue;
-        }
-        else {
-          Serial.print("pinRegister comparison conditions not met, time to debug!!\n");
-        }
-        updateRegisters();
-      }
       updateRegisters();
+      }
     }
 
     void checkRegisters() {
@@ -181,7 +182,7 @@
     void clearRegisters() {
       for (int i = 7; i >= 0; i--) {
         for (int j = 7; j >= 0; j--) {
-          bitClear(ledRegisters)[i], j);
+          bitClear(ledRegisters[i], j);
         }
       }
     }
@@ -198,20 +199,20 @@
       }
 
       void LED::rOn() {
-        bitSet(ledRegisters)[rReg], rBit);
+        bitSet(ledRegisters[rReg], rBit);
       }
       void LED::rOff() {
-        bitClear(ledRegisters)[rReg], rBit);
+        bitClear(ledRegisters[rReg], rBit);
       }
       void LED::gOn() {
-        bitSet(ledRegisters)[gReg], gBit);
+        bitSet(ledRegisters[gReg], gBit);
       }
       void LED::gOff() {
-        bitClear(ledRegisters)[gReg], gBit);
+        bitClear(ledRegisters[gReg], gBit);
       }
       void LED::bOn() {
-        bitSet(ledRegisters)[bReg], bBit);
+        bitSet(ledRegisters[bReg], bBit);
       }
       void LED::bOff() {
-        bitClear(ledRegisters)[bReg], bBit);
+        bitClear(ledRegisters[bReg], bBit);
       }
