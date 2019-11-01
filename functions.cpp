@@ -159,6 +159,9 @@
       updateRegisters();
       }
     }
+    //The current problem is that if the test pin and another pin are shorted, the pinTest function reports that both pins have a break.
+    //This is because there is 5V present on the other pin keeping the test pin high. To get around this the function needs to test for 
+    //continuity on the test pin as normal, then pull every other pin low whilst keeping the test pin high to detect current leakage.
 
     void checkRegisters() {
       Serial.print("LED Registers: \n");
