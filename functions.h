@@ -13,6 +13,8 @@
 
     extern const int inPins[10];
 
+    extern const int dipPins[16];
+
     extern byte ledRegisters[8];
 
     extern const bool pinMask[10][10];
@@ -53,5 +55,9 @@
     void checkRegisters();
 
     void clearRegisters();
+
+    int cableType();
+
+    void dipCheck();
 
     #endif

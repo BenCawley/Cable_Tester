@@ -9,19 +9,23 @@ void setup() {
     pinMode(inPins[i], INPUT_PULLUP); 
     digitalWrite(outPins[i], HIGH);       
   }
+  for (int j = 0; j < 16; j++) {
+    pinMode(dipPins[i], INPUT_PULLUP);
+  }
   
   pinMode(latchPin, OUTPUT);
   pinMode(dataPin, OUTPUT);  
   pinMode(clockPin, OUTPUT);
   pinMode(outEnable, OUTPUT);
 
-//  ledCheck();
   clearRegisters();
   updateRegisters();
-  pinTest(3);
 
-  checkRegisters();
+  dipCheck();
 }
 
 void loop() {
+  pinTest(cabletype());
+
+  checkRegisters();
 }
