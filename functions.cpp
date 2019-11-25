@@ -30,7 +30,7 @@
     0b00000000
     };
 
-    bool pinMask[10][10] = {
+    bool const pinMask[10][10] = {
     {1,0,0,0,0,0,0,0,0,0},
     {0,1,0,0,0,0,0,0,0,0},
     {0,0,1,0,0,0,0,0,0,0},
@@ -102,6 +102,9 @@
           delay(20);
         }
       }
+    }
+
+    void ledChase() {
       for (int k = 0; k < 45; k++) { // Produces a chassing array of 5 rgb leds
         leds[k].gOn();
         leds[k-10].rOn();
@@ -117,7 +120,7 @@
     }
 
     void pinTest(int pinCount) {
-      for (int i = 0; i < pinCount; i++) { // iterate through output pins
+      for (int i = 0; i < pinCount; i++) { // Iterate through output pins
         digitalWrite(outPins[i], LOW); // set i high to test that pin
         
         for (int j = 0; j < pinCount; j++) { // iterate through input pins and test for high or low state
@@ -131,7 +134,7 @@
           else if (digitalRead(inPins[j]) == HIGH && pinMask[i][j] == true) { // Else, if the mask expects a true value and the pin is high,
             for (int k = 0; k <= pinCount; k++) {                             // iterate through inPins and check if any of them are low, 
               if (digitalRead(inPins[k]) == LOW) {                            // turning on the blue led and exiting the loop if they are
-                leds[i].bOn();                                                // as this indicates a crossed cable
+                leds[i].bOn();                                                // as this indicates a crossed cable.
                 leds[k+10].bOn();
                 break;
               }
@@ -152,11 +155,9 @@
                   if (n == i) {
                     continue;
                   }
-                  else if (digitalRead(inPins[n]) == HIGH && n < pinCount) { // If any are high this means current is leaking onto them and indicates a short
+                  else if (digitalRead(inPins[n]) == HIGH && n < pinCount) { // If any are high this means current is leaking onto them and indicates a short.
                     leds[i].rOn();
-                    leds[i].bOn();
                     leds[n+10].rOn();
-                    leds[n+10].bOn();
                   }
                   else if (digitalRead(inPins[n]) == LOW && n < pinCount) {
                     continue;
@@ -182,7 +183,8 @@
             continue;
           }
         }
-      updateRegisters();
+        digitalWrite(outPins[i], HIGH);
+        updateRegisters();
       }
     }
 
@@ -221,12 +223,12 @@
       }
     }
 
-    int dipCheck() { //Optional calls for the remaining 6 dip switches after the first 10 that determin cable type
+    void dipCheck() { //Optional calls for the remaining 6 dip switches after the first 10 that determin cable type
       if (digitalRead(dipPins[10]) == LOW) {
-        ledCheck();
+        ledCheck(); //Checks each led element is functional
       }
       if (digitalRead(dipPins[11]) == LOW) {
-        //do something
+        ledChase(); //Produces a chasing led pattern
       }
       if (digitalRead(dipPins[12]) == LOW) {
         //do something

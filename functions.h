@@ -50,6 +50,8 @@
     
     void ledCheck();
 
+    void ledChase();
+
     void pinTest(int pinCount);
 
     void checkRegisters();

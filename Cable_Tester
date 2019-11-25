@@ -10,7 +10,7 @@ void setup() {
     digitalWrite(outPins[i], HIGH);       
   }
   for (int j = 0; j < 16; j++) {
-    pinMode(dipPins[i], INPUT_PULLUP);
+    pinMode(dipPins[j], INPUT_PULLUP);
   }
   
   pinMode(latchPin, OUTPUT);
@@ -25,7 +25,8 @@ void setup() {
 }
 
 void loop() {
-  pinTest(cabletype());
+  pinTest(/*cabletype()*/3);
+  clearRegisters();
 
   checkRegisters();
 }
